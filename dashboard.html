@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Supreme Motive</title>
+  <script src="https://cdn.jsdelivr.net/npm/appwrite"></script>
+  <script src="appwrite-config.js"></script>
+</head>
+<body>
+  <h2>Dashboard</h2>
+  <div id="wallet">Wallet: ₦0</div>
+  <div id="refLink"></div>
+  <a href="withdraw.html">Withdraw</a>
+  <script>
+    const userId = localStorage.getItem("userId");
+    async function getWallet() {
+      const w = await database.getDocument(DB, walletsCol, userId);
+      document.getElementById("wallet").innerText = `Wallet: ₦${w.balance}`;
+      document.getElementById("refLink").innerText = `Your referral link: https://yourdomain.com/signup.html?ref=${userId}`;
+    }
+    getWallet();
+  </script>
+</body>
+</html>
