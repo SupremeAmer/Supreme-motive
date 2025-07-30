@@ -1,0 +1,37 @@
+‎<!DOCTYPE html>
+‎<html lang="en">
+‎<head>
+‎  <meta charset="UTF-8">
+‎  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+‎  <title>Withdraw Funds - Supreme Motive</title>
+‎  <script src="https://cdn.jsdelivr.net/npm/appwrite"></script>
+‎  <script src="appwrite-config.js"></script>
+‎</head>
+‎<body>
+‎  <h2>Request Withdrawal</h2>
+‎  <div id="walletBalance">Wallet: ₦0</div>
+‎  <form onsubmit="submitWithdraw(event)">
+‎    <input type="number" id="amount" placeholder="Amount to withdraw" required><br>
+‎    <input type="text" id="method" placeholder="Bank or crypto address" required><br>
+‎    <button type="submit">Submit Withdrawal</button>
+‎  </form>
+‎  <script>
+‎    const userId = localStorage.getItem("userId");
+‎    async function getWallet() {
+‎      const w = await database.getDocument(DB, walletsCol, userId);
+‎      document.getElementById("walletBalance").innerText = `Wallet: ₦${w.balance}`;
+‎    }
+‎    getWallet();
+‎    async function submitWithdraw(e) {
+‎      e.preventDefault();
+‎      await database.createDocument(DB, withdrawalsCol, ID.unique(), {
+‎        userId,
+‎        amount: parseInt(document.getElementById('amount').value),
+‎        method: document.getElementById('method').value,
+‎        status: 'pending'
+‎      });
+‎      alert("Request submitted");
+‎    }
+‎  </script>
+‎</body>
+‎</html>
