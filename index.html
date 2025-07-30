@@ -1,0 +1,122 @@
+<!DOCTYPE html><html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Supreme Motive</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/appwrite@13.0.0"></script>
+  </head>
+  <body class="bg-white text-gray-800">
+    <!-- HEADER -->
+    <header class="bg-teal-600 text-white p-4 flex justify-between items-center">
+      <div class="text-xl font-bold">Supreme Motive</div>
+      <nav class="space-x-4">
+        <a href="#dashboard" class="hover:underline">Dashboard</a>
+        <a href="#products" class="hover:underline">Products</a>
+        <a href="#wallet" class="hover:underline">Wallet</a>
+        <a href="#login" class="hover:underline">Login</a>
+        <a href="#signup" class="hover:underline">Signup</a>
+      </nav>
+    </header><!-- AUTH SECTION -->
+<section id="auth" class="p-6">
+  <div class="grid md:grid-cols-2 gap-6">
+    <!-- LOGIN -->
+    <div id="login" class="bg-white shadow p-4 rounded-xl">
+      <h2 class="text-xl font-bold mb-4">Login</h2>
+      <input id="loginEmail" type="email" placeholder="Email" class="w-full p-2 mb-2 border rounded" />
+      <input id="loginPassword" type="password" placeholder="Password" class="w-full p-2 mb-2 border rounded" />
+      <button onclick="loginUser()" class="bg-teal-600 text-white px-4 py-2 rounded">Login</button>
+    </div>
+
+    <!-- SIGNUP -->
+    <div id="signup" class="bg-white shadow p-4 rounded-xl">
+      <h2 class="text-xl font-bold mb-4">Signup</h2>
+      <input id="signupName" type="text" placeholder="Name" class="w-full p-2 mb-2 border rounded" />
+      <input id="signupEmail" type="email" placeholder="Email" class="w-full p-2 mb-2 border rounded" />
+      <input id="signupPassword" type="password" placeholder="Password" class="w-full p-2 mb-2 border rounded" />
+      <button onclick="signupUser()" class="bg-teal-600 text-white px-4 py-2 rounded">Signup</button>
+    </div>
+  </div>
+</section>
+
+<!-- PRODUCTS SECTION -->
+<section id="products" class="p-6">
+  <h2 class="text-2xl font-bold mb-4">Available Products</h2>
+  <div id="productList" class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+    <!-- Product cards will load here -->
+  </div>
+</section>
+
+<!-- WALLET SECTION -->
+<section id="wallet" class="p-6 bg-gray-50">
+  <h2 class="text-2xl font-bold mb-4">Your Wallet</h2>
+  <div class="bg-white rounded-xl shadow-md p-4">
+    <p class="text-lg">Balance: <span id="walletBalance" class="font-semibold text-teal-600">₦0</span></p>
+    <button class="mt-2 bg-teal-600 text-white px-4 py-2 rounded-md">Withdraw</button>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="bg-gray-800 text-white p-4 text-center">
+  &copy; 2025 Supreme Motive. All rights reserved.
+</footer>
+
+<script>
+  const client = new Appwrite.Client();
+  const account = new Appwrite.Account(client);
+  const database = new Appwrite.Databases(client);
+
+  client.setEndpoint('https://[YOUR_APPWRITE_ENDPOINT]').setProject('[YOUR_PROJECT_ID]');
+
+  async function signupUser() {
+    const email = document.getElementById('signupEmail').value;
+    const password = document.getElementById('signupPassword').value;
+    const name = document.getElementById('signupName').value;
+    try {
+      await account.create('unique()', email, password, name);
+      alert('Signup successful. Please log in.');
+    } catch (error) {
+      alert(error.message);
+    }
+  }
+
+  async function loginUser() {
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    try {
+      await account.createEmailSession(email, password);
+      alert('Login successful');
+      loadProducts();
+      loadWallet();
+    } catch (error) {
+      alert(error.message);
+    }
+  }
+
+  async function loadProducts() {
+    try {
+      const response = await database.listDocuments('[DATABASE_ID]', '[PRODUCTS_COLLECTION_ID]');
+      const list = document.getElementById('productList');
+      list.innerHTML = '';
+      response.documents.forEach((doc) => {
+        const card = `<div class="bg-white rounded-xl shadow-md p-4">
+          <img src="${doc.cover}" alt="Product Image" class="rounded-md mb-2" />
+          <h3 class="font-bold text-lg">${doc.title}</h3>
+          <p class="text-sm text-gray-500">Earn ₦${doc.commission} per referral</p>
+          <button class="mt-2 bg-teal-600 text-white px-4 py-2 rounded-md">Get Link</button>
+        </div>`;
+        list.innerHTML += card;
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async function loadWallet() {
+    // Simulate for now; real value comes from your user data later
+    document.getElementById('walletBalance').textContent = '₦7,500';
+  }
+</script>
+
+  </body>
+</html>
