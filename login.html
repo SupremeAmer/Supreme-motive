@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Supreme Motive</title>
+  <script src="https://cdn.jsdelivr.net/npm/appwrite"></script>
+  <script src="appwrite-config.js"></script>
+</head>
+<body>
+  <h2>Login</h2>
+  <form onsubmit="login(event)">
+    <input type="email" id="email" placeholder="Email" required><br>
+    <input type="password" id="password" placeholder="Password" required><br>
+    <button type="submit">Login</button>
+  </form>
+  <script>
+    async function login(e) {
+      e.preventDefault();
+      await account.createEmailSession(document.getElementById("email").value, document.getElementById("password").value);
+      const user = await account.get();
+      localStorage.setItem("userId", user.$id);
+      window.location.href = "dashboard.html";
+    }
+  </script>
+</body>
+</html>
