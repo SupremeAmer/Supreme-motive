@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+‎<html lang="en">
+‎<head>
+‎  <meta charset="UTF-8">
+‎  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+‎  <title>Admin Panel - Supreme Motive</title>
+‎  <script src="https://cdn.jsdelivr.net/npm/appwrite"></script>
+‎  <script src="appwrite-config.js"></script>
+‎</head>
+‎<body>
+‎  <h1>Admin Dashboard</h1>
+‎  <h3>Pending Withdrawals</h3>
+‎  <div id="withdrawals"></div>
+‎  <h3>Referral Analytics</h3>
+‎  <div id="referrals"></div>
+‎  <script>
+‎    async function loadAdmin() {
+‎      const user = await account.get();
+‎      if (!user.labels.includes("admin")) throw new Error("Not admin");
+‎      loadWithdrawals();
+‎      loadReferrals();
+‎    }
+‎    async function loadWithdrawals() {
+‎      const list = await database.listDocuments(DB, withdrawalsCol);
+‎      document.getElementById("withdrawals").innerHTML = list.documents.map(w => `
+‎        <div>
+‎          <b>User:</b> ${w.userId} <b>₦${w.amount}</b><br>
+‎          Method: ${w.method} | Status: ${w.status}<br>
+‎          <button onclick="approve('${w.$id}')">Approve</button>
+‎          <button onclick="reject('${w.$id}')">Reject</button>
+‎        </div>`).join('');
+‎    }
+‎    async function approve(id) {
+‎      await database.updateDocument(DB, withdrawalsCol, id, { status: "paid" });
+‎      loadWithdrawals();
+‎    }
+‎    async function reject(id) {
+‎      await database.updateDocument(DB, withdrawalsCol, id, { status: "rejected" });
+‎      loadWithdrawals();
+‎    }
+‎    async function loadReferrals() {
+‎      const data = await database.listDocuments(DB, referralsCol);
+‎      document.getElementById("referrals").innerHTML = data.documents.map(r => `
+‎        <div>
+‎          Buyer: ${r.buyerId} | Referrer: ${r.referredBy} | Earned: ₦${r.reward}<br>
+‎          Date: ${new Date(r.$createdAt).toLocaleDateString()}
+‎        </div>`).join('');
+‎    }
+‎    loadAdmin();
+‎  </script>
+‎</body>
+‎</html>
