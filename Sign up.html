@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Signup - Supreme Motive</title>
+  <script src="https://cdn.jsdelivr.net/npm/appwrite"></script>
+  <script src="appwrite-config.js"></script>
+</head>
+<body>
+  <h2>Register</h2>
+  <form onsubmit="register(event)">
+    <input type="email" id="email" placeholder="Email" required><br>
+    <input type="password" id="password" placeholder="Password" required><br>
+    <button type="submit">Sign Up</button>
+  </form>
+  <script>
+    async function register(e) {
+      e.preventDefault();
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const ref = new URLSearchParams(window.location.search).get("ref") || "";
+      await account.create(ID.unique(), email, password);
+      const user = await account.get();
+      localStorage.setItem("userId", user.$id);
+      if (ref && ref !== user.$id) {
+        await database.createDocument(DB, referralsCol, ID.unique(), {
+          referredBy: ref,
+          buyerId: user.$id,
+          reward: 0,
+        });
+      }
+      window.location.href = "login.html";
+    }
+  </script>
+</body>
+</html>
