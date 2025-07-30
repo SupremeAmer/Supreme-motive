@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login - Supreme Motive</title>
+  <script src="https://cdn.jsdelivr.net/npm/appwrite"></script>
+  <script src="appwrite-config.js"></script>
+</head>
+<body>
+  <h2>Admin Login</h2>
+  <form onsubmit="adminLogin(event)">
+    <input type="email" id="email" placeholder="Admin Email" required><br>
+    <input type="password" id="password" placeholder="Password" required><br>
+    <button type="submit">Login</button>
+  </form>
+  <script>
+    async function adminLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      await account.createEmailSession(email, password);
+      const user = await account.get();
+      if (["supremealpha04@gmail.com", "emmyplumbingserivce@gmail.com", "funkomark24@gmail.com"].includes(user.email)) {
+        window.location.href = "admin.html";
+      } else {
+        alert("Not authorized as admin.");
+      }
+    }
+  </script>
+</body>
+</html>
